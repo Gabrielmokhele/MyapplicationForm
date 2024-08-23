@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import App from "./App";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const multiStepContext = React.createContext();
-const StepContext = () => {
-  const [currentStep, setStep] = useState(1);
+const StepContext = ({ children }) => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
   const [userData, setUserData] = useState([]);
   const [FinalData, setFinalData] = useState([]);
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [loginEmail, setloginEmail] = useState("");
+  const [userId, setUserId] = useState('');
 
-  const LOCAL_API_URL = "http://localhost:5001/myfiles";
+  const setStep = (step) => setCurrentStep(step);
+
   const submitData = async () => {
     try {
-      const response = await axios.post(`${LOCAL_API_URL}`, { ...userData });
-      setFinalData((FinalData) => [...FinalData]);
-      console.log(userData);
       setUserData("");
       setStep(1);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -31,13 +33,20 @@ const StepContext = () => {
           setUserData,
           FinalData,
           setFinalData,
-          submitData,
+          submitData, 
+          registerEmail, 
+          setRegisterEmail, 
+          loginEmail, 
+          setloginEmail, 
+          userId, 
+          setUserId,
         }}
       >
-        <App />
+        {children}
       </multiStepContext.Provider>
     </div>
   );
 };
 
 export default StepContext;
+

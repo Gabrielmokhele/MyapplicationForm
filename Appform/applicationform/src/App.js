@@ -1,54 +1,53 @@
-import React, { useContext } from "react";
-import Header from "./Component/Header/header";
+import React, {useContext} from "react";
+import { Routes, Route, Navigate, useLocation} from "react-router-dom";
+import Homepage from "./Component/Pages/Homepage";
+import JobSearch from "./Component/Pages/jobSearch";
+import CandidateHome from "./Component/Pages/CandidateHome";
+import Profile from "./Component/Pages/Profile";
 import FirstStep from "./Component/FirstStep";
 import SecondStep from "./Component/SecondStep";
 import ThirdStep from "./Component/ThirdStep";
-import { Stepper, StepLabel, Step, Container, Stack } from "@mui/material";
-import { multiStepContext } from "./StepContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HeaderProvider } from './Component/Header/headerContext';
+import { multiStepContext } from "./StepContext";
+import withAuth from "./hooks/useAuth"; 
+
 
 const queryClient = new QueryClient();
 
 function App() {
-  const { currentStep, FinalData } = useContext(multiStepContext);
+  const { currentStep } = useContext(multiStepContext);
+  const location = useLocation();
+  const isAuthenticated = Boolean(currentStep);
+  const queryParams = new URLSearchParams(location.search);
+  const userId = queryParams.get('UID');
 
-  const ShowStep = (step) => {
-    console.log(step);
-    if (step === 1) {
-      return <FirstStep />;
-    } else if (step === 2) {
-      return <SecondStep />;
-    } else if (step === 3) {
-      return <ThirdStep />;
-    }
-  };
 
   return (
-    <div>
-      <QueryClientProvider client={queryClient}>
-        <Header />
-        <Container maxWidth="xl" sx={{ mt: 4 }}>
-          <Stepper
-            className="centre-stepper"
-            activeStep={currentStep - 1}
-            orientation="horizontal"
-          >
-            <Step>
-              <StepLabel></StepLabel>
-            </Step>
-            <Step>
-              <StepLabel></StepLabel>
-            </Step>
-            <Step>
-              <StepLabel></StepLabel>
-            </Step>
-          </Stepper>
-
-          <Stack sx={{ mt: 4 }}>{ShowStep(currentStep)}</Stack>
-        </Container>
-      </QueryClientProvider>
-    </div>
+    <HeaderProvider> 
+      <Routes>
+      <Route path="/" element={<Homepage />} />
+          <Route path="/dashboard" element={isAuthenticated ? <JobSearch /> : <Navigate to="/" />} />
+          <Route path="/profile/:userId" element={isAuthenticated ? <Profile /> : <Navigate to="/" />} />
+          <Route path="/jobSearch/:userId" element={isAuthenticated ? <JobSearch /> : <Navigate to="/" />} />
+          <Route path="/Candidate/:userId" element={isAuthenticated ? <CandidateHome /> : <Navigate to="/" />} />
+          <Route path="/step-1" element={isAuthenticated ? <FirstStep userId={userId} /> : <Navigate to="/" />} />
+          <Route path="/step-2" element={isAuthenticated ? <SecondStep userId={userId} /> : <Navigate to="/" />} />
+          <Route path="/step-3" element={isAuthenticated ? <ThirdStep userId={userId} /> : <Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </HeaderProvider>
   );
 }
 
-export default App;
+
+const WrappedApp = withAuth(App);
+
+const Main = () => (
+  <QueryClientProvider client={queryClient}>
+    <WrappedApp />
+  </QueryClientProvider>
+);
+
+export default Main;
+

@@ -20,6 +20,7 @@ exports.getAllPersons = async (req, res) => {
 
 exports.createPerson = async (req, res) => {
   const {
+    userId,
     firstName,
     lastName,
     dateOfBirth,
@@ -33,6 +34,7 @@ exports.createPerson = async (req, res) => {
   } = req.body;
   try {
     const person = await Person.create({
+      userId,
       firstName,
       lastName,
       dateOfBirth,

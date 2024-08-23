@@ -1,17 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import Main from './App';
 import reportWebVitals from './reportWebVitals';
 import StepContext from './StepContext';
+import { BrowserRouter} from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <StepContext>
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <StepContext>
+        <Main />
+      </StepContext>
+    </BrowserRouter>
   </React.StrictMode>
-  </StepContext>
 
 );
 
@@ -19,6 +22,8 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+
 
 
 

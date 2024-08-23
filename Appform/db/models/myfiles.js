@@ -8,7 +8,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      MyFiles.belongsTo(models.User, {
+        foreignKey: 'userId', 
+        as: 'User', 
+      });
     }
   }
   MyFiles.init(
@@ -40,6 +43,13 @@ module.exports = (sequelize, DataTypes) => {
       filePath: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      userId: { 
+        type: DataTypes.UUID,
+        references: {
+          model: 'users', 
+          key: 'id', 
+        },
       },
     },
     {
